@@ -1,44 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validate.c                                         :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: beatde-a <beatde-a@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 17:23:25 by beatde-a          #+#    #+#             */
-/*   Updated: 2025/07/24 17:23:25 by beatde-a         ###   ########.fr       */
+/*   Created: 2025/07/24 18:17:41 by beatde-a          #+#    #+#             */
+/*   Updated: 2025/07/24 18:17:41 by beatde-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-static int	is_numeric(const char *s)
+long	ft_atol(const char *s)
 {
-	if (!*s)
-		return (0);
-	while (*s)
+	long	res;
+	int		sign;
+
+	res = 0;
+	sign = 1;
+	while (*s == ' ' || (*s >= 9 && *s <= 13))
+		s++;
+	if (*s == '+' || *s == '-')
 	{
-		if (*s < '0' || *s > '9')
-			return (0);
+		if (*s == '-')
+			sign = -1;
 		s++;
 	}
-	return (1);
-}
-
-int	validate_input(int argc, char **argv)
-{
-	int	i;
-
-	if (argc < 5 || argc > 6)
-		return (0);
-	i = 1;
-	while (i < argc)
+	while (*s >= '0' && *s <= '9')
 	{
-		if (!is_numeric(argv[i]))
-			return (0);
-		if (ft_atol(argv[i]) < 0 || ft_atol(argv[i]) >= INT_MAX)
-			return (0);
-		i++;
+		res = res * 10 + *s - '0';
+		s++;
 	}
-	return (1);
+	return (res * sign);
 }

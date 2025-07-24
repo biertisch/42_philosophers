@@ -1,7 +1,9 @@
 NAME = philo
 SRC_DIR = src/
 SRC = $(addprefix $(SRC_DIR),\
+		init.c\
 		main.c\
+		utils.c\
 		validate.c)
 OBJ_DIR = obj/
 OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))

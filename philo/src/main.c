@@ -16,21 +16,32 @@
 {
 	if (msg)
 		printf("Error: %s\n", msg);
-	//clean_up
+	//clean_up(&monitor);
 } */
 
 int	main(int argc, char **argv)
 {
 	t_monitor	monitor;
 
+	memset(&monitor, 0, sizeof(monitor));
 	if (!validate_input(argc, argv))
 	{
 		//error_exit(&monitor, "invalid input");
 		return (1);
 	}
-	
+	if (!init_sim(&monitor, argc, argv))
+	{
+		//error_exit
+		return (2);
+	}
+	while (!monitor.sim_over)
+	{
+		//monitor
+		//sleep_ms(1);
+	}
+	//clean_up(&monitor);
+	return (0);
 }
-
 
 //main.c
 //error
@@ -66,5 +77,4 @@ int	main(int argc, char **argv)
 //free all memory
 
 //utils.c
-//ft_strlen
 //ft_atol
