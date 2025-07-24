@@ -51,7 +51,9 @@ typedef struct s_monitor
 }					t_monitor;
 
 int		validate_input(int argc, char **argv);
-int		init_sim(t_monitor *monitor, int argc, char **argv);
 long	ft_atol(const char *s);
+int		init_sim(t_monitor *monitor, int argc, char **argv);
+void	cleanup(t_monitor *monitor);
+void	error_exit(t_monitor *monitor, char *error_msg);
 
 #endif

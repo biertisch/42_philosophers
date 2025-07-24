@@ -12,6 +12,31 @@
 
 #include "../include/philo.h"
 
+long	ft_atol(const char *s)
+{
+	long	res;
+	int		sign;
+
+	if (!s)
+		return (0);
+	res = 0;
+	sign = 1;
+	while (*s == ' ' || (*s >= 9 && *s <= 13))
+		s++;
+	if (*s == '+' || *s == '-')
+	{
+		if (*s == '-')
+			sign = -1;
+		s++;
+	}
+	while (*s >= '0' && *s <= '9')
+	{
+		res = res * 10 + *s - '0';
+		s++;
+	}
+	return (res * sign);
+}
+
 static int	is_numeric(const char *s)
 {
 	if (!*s)

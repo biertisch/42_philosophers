@@ -12,13 +12,6 @@
 
 #include "../include/philo.h"
 
-/* void	error_exit(t_monitor *monitor, char *error_msg)
-{
-	if (msg)
-		printf("Error: %s\n", msg);
-	//clean_up(&monitor);
-} */
-
 int	main(int argc, char **argv)
 {
 	t_monitor	monitor;
@@ -26,12 +19,12 @@ int	main(int argc, char **argv)
 	memset(&monitor, 0, sizeof(monitor));
 	if (!validate_input(argc, argv))
 	{
-		//error_exit(&monitor, "invalid input");
+		error_exit(&monitor, "invalid input");
 		return (1);
 	}
 	if (!init_sim(&monitor, argc, argv))
 	{
-		//error_exit
+		error_exit(&monitor, "failure to initiate simulation");
 		return (2);
 	}
 	while (!monitor.sim_over)
@@ -39,20 +32,19 @@ int	main(int argc, char **argv)
 		//monitor
 		//sleep_ms(1);
 	}
-	//clean_up(&monitor);
+	cleanup(&monitor);
 	return (0);
 }
 
-//main.c
-//error
+/* Plan
+Add proper time handling
+Basic routine: eat/sleep/think
+Add monitor thread
+Test, optimize */
 
-//parser.c
-//validate input
-
-//init.c
-//init config
-//init philosophers & threads
-//init forks
+//time.c
+//get_time_ms (using gettimeofday)
+//sleep_ms (using usleep)
 
 //routine.c
 //take forks
@@ -61,20 +53,8 @@ int	main(int argc, char **argv)
 //think
 //repeat
 
-//time.c
-//get_time_ms (using gettimeofday)
-//sleep_ms (using usleep)
-
 //monitor.c
 //check death (current_time - last_meal)
 //check satiety (if applicable)
 //manage priorities?
 //print message
-
-//cleanup.c
-//pthread_join all thread
-//destroy all mutexes
-//free all memory
-
-//utils.c
-//ft_atol

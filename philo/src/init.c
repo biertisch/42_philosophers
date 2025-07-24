@@ -26,7 +26,8 @@ static int	init_philos(t_monitor *monitor)
 		monitor->philos[i].meals_eaten = 0;
 		monitor->philos[i].last_meal = 0;
 		monitor->philos[i].left_fork = &monitor->forks[i];
-		monitor->philos[i].right_fork = &monitor->forks[(i + 1) % monitor->total];
+		monitor->philos[i].right_fork
+			= &monitor->forks[(i + 1) % monitor->total];
 		monitor->philos[i].monitor = monitor;
 		if (pthread_mutex_init(&monitor->philos[i].meal_lock, NULL) != 0)
 			return (0);
@@ -81,7 +82,7 @@ int	init_sim(t_monitor *monitor, int argc, char **argv)
 		return (0);
 	if (!init_philos(monitor))
 		return (0);
-	//monitor->start_time = get_time_ms();
+	monitor->start_time = get_time_ms();
 	monitor->sim_over = 0;
 	return (1);
 }
