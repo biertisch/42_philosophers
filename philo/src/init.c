@@ -12,77 +12,65 @@
 
 #include "../include/philo.h"
 
-static int	init_philos(t_monitor *monitor)
+int	init_philos(t_sim *sim)
 {
 	int	i;
 
-	monitor->philos = malloc(sizeof(t_philo) * monitor->total);
-	if (!monitor->philos)
+	sim->philos = malloc(sizeof(t_philo) * sim->total);
+	if (!sim->philos)
 		return (0);
 	i = 0;
-	while (i < monitor->total)
+	while (i < sim->total)
 	{
-		monitor->philos[i].id = i + 1;
-		monitor->philos[i].meals_eaten = 0;
-		monitor->philos[i].last_meal = 0;
-		monitor->philos[i].left_fork = &monitor->forks[i];
-		monitor->philos[i].right_fork
-			= &monitor->forks[(i + 1) % monitor->total];
-		monitor->philos[i].monitor = monitor;
-		if (pthread_mutex_init(&monitor->philos[i].meal_lock, NULL) != 0)
+		sim->philos[i].id = i + 1;
+		sim->philos[i].meals_eaten = 0;
+		sim->philos[i].last_meal = sim->start_time;
+		sim->philos[i].left_fork = &sim->forks[i];
+		sim->philos[i].right_fork = &sim->forks[(i + 1) % sim->total];
+		sim->philos[i].sim = sim;
+		if (pthread_mutex_init(&sim->philos[i].meal_lock, NULL) != 0)
 			return (0);
-		if (pthread_create(&monitor->philos[i].thread), NULL, &routine,
-			&monitor->philos[i] != 0)
+		if (pthread_create(&sim->philos[i].thread, NULL, &routine,
+			&sim->philos[i]) != 0)
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-static int	init_forks(t_monitor *monitor)
+int	init_forks(t_sim *sim)
 {
 	int	i;
 
-	monitor->forks = malloc(sizeof(pthread_mutex_t) * monitor->total);
-	if (!monitor->forks)
+	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->total);
+	if (!sim->forks)
 		return (0);
 	i = 0;
-	while (i < monitor->total)
+	while (i < sim->total)
 	{
-		if (pthread_mutex_init(&monitor->forks[i], NULL) != 0)
+		if (pthread_mutex_init(&sim->forks[i], NULL) != 0)
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-static int	init_config(t_monitor *monitor, int argc, char **argv)
+int	init_config(t_sim *sim, int argc, char **argv)
 {
-	monitor->total = ft_atol(argv[1]);
-	monitor->time_to_die = ft_atol(argv[2]);
-	monitor->time_to_eat = ft_atol(argv[3]);
-	monitor->time_to_sleep = ft_atol(argv[4]);
-	monitor->required_meals = -1;
+	sim->total = ft_atol(argv[1]);
+	sim->time_to_die = ft_atol(argv[2]);
+	sim->time_to_eat = ft_atol(argv[3]);
+	sim->time_to_sleep = ft_atol(argv[4]);
+	sim->required_meals = -1;
 	if (argc == 6)
-		monitor->required_meals = ft_atol(argv[5]);
-	if (pthread_mutex_init(&monitor->print_lock, NULL) != 0)
+		sim->required_meals = ft_atol(argv[5]);
+	if (pthread_mutex_init(&sim->print_lock, NULL) != 0)
 		return (0);
-	if (pthread_mutex_init(&monitor->sim_lock, NULL) != 0)
+	if (pthread_mutex_init(&sim->sim_lock, NULL) != 0)
 		return (0);
-	monitor->start_time = 0;
-	monitor->sim_over = 1;
-	return (1);
-}
-
-int	init_sim(t_monitor *monitor, int argc, char **argv)
-{
-	if (!init_config(monitor, argc, argv))
+	sim->start_time = get_time_ms();
+	if (sim->start_time < 0)
 		return (0);
-	if (!init_forks(monitor))
-		return (0);
-	if (!init_philos(monitor))
-		return (0);
-	monitor->start_time = get_time_ms();
-	monitor->sim_over = 0;
+	sim->sim_over = 1;
 	return (1);
 }

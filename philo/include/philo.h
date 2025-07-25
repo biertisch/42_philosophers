@@ -21,21 +21,21 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-struct	s_monitor;
+struct	s_sim;
 
 typedef struct s_philo
 {
-	int					id;
-	pthread_t			thread;
-	int					meals_eaten;
-	long				last_meal;
-	pthread_mutex_t		meal_lock;
-	pthread_mutex_t		*left_fork;
-	pthread_mutex_t		*right_fork;
-	struct s_monitor	*monitor;
-}						t_philo;
+	int				id;
+	pthread_t		thread;
+	int				meals_eaten;
+	long			last_meal;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	struct s_sim	*sim;
+}					t_philo;
 
-typedef struct s_monitor
+typedef struct s_sim
 {
 	int				total;
 	int				time_to_die;
@@ -48,12 +48,19 @@ typedef struct s_monitor
 	pthread_mutex_t	sim_lock;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
-}					t_monitor;
+}					t_sim;
 
 int		validate_input(int argc, char **argv);
 long	ft_atol(const char *s);
-int		init_sim(t_monitor *monitor, int argc, char **argv);
-void	cleanup(t_monitor *monitor);
-void	error_exit(t_monitor *monitor, char *error_msg);
+int		init_config(t_sim *sim, int argc, char **argv);
+int		init_forks(t_sim *sim);
+int		init_philos(t_sim *sim);
+void	*routine(void *arg);
+void	monitor(t_sim *sim);
+void	print_status(t_philo *philo, char *msg);
+long	get_time_ms();
+int		sleep_ms(long msec);
+int		error_exit(t_sim *sim, char *error_msg, int error_code);
+void	cleanup(t_sim *sim);
 
 #endif

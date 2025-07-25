@@ -14,47 +14,23 @@
 
 int	main(int argc, char **argv)
 {
-	t_monitor	monitor;
+	t_sim	sim;
 
-	memset(&monitor, 0, sizeof(monitor));
+	memset(&sim, 0, sizeof(sim));
 	if (!validate_input(argc, argv))
+		return (error_exit(&sim, "invalid input", 1));
+	if (!init_config(&sim, argc, argv))
+		return (error_exit(&sim, "failure to initialize configuration", 2));
+	if (!init_forks(&sim))
+		return (error_exit(&sim, "failure to initialize forks", 3));
+	if (!init_philos(&sim))
+		return (error_exit(&sim, "failure to initialize philosophers", 4));
+	sim.sim_over = 0;
+	while (!sim.sim_over)
 	{
-		error_exit(&monitor, "invalid input");
-		return (1);
+		monitor(&sim);
+		sleep_ms(1);
 	}
-	if (!init_sim(&monitor, argc, argv))
-	{
-		error_exit(&monitor, "failure to initiate simulation");
-		return (2);
-	}
-	while (!monitor.sim_over)
-	{
-		//monitor
-		//sleep_ms(1);
-	}
-	cleanup(&monitor);
+	cleanup(&sim);
 	return (0);
 }
-
-/* Plan
-Add proper time handling
-Basic routine: eat/sleep/think
-Add monitor thread
-Test, optimize */
-
-//time.c
-//get_time_ms (using gettimeofday)
-//sleep_ms (using usleep)
-
-//routine.c
-//take forks
-//eat
-//sleep
-//think
-//repeat
-
-//monitor.c
-//check death (current_time - last_meal)
-//check satiety (if applicable)
-//manage priorities?
-//print message

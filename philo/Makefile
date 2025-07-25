@@ -4,6 +4,9 @@ SRC = $(addprefix $(SRC_DIR),\
 		cleanup.c\
 		init.c\
 		main.c\
+		monitor.c\
+		routine.c\
+		time.c\
 		validate.c)
 OBJ_DIR = obj/
 OBJ = $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRC))

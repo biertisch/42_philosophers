@@ -12,51 +12,40 @@
 
 #include "../include/philo.h"
 
-static int	ft_strlen(const char *s)
+int	error_exit(t_sim *sim, char *error_msg, int error_code)
+{
+	int	len;
+
+	len = 0;
+	while (error_msg[len])
+		len++;
+	write(2, "Error: ", 7);
+	write(2, error_msg, len);
+	write(2, "\n", 1);
+	cleanup(sim);
+	return (error_code);
+}
+
+void	cleanup(t_sim *sim)
 {
 	int	i;
 
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
-
-void	error_exit(t_monitor *monitor, char *error_msg)
-{
-	if (msg)
-	{
-		write(2, "Error: ", 7);
-		write(2, error_msg, ft_strlen(error_msg));
-		write(2, "\n", 1);
-	}
-	else
-		write(2, "Error\n", 6);
-	cleanup(&monitor);
-}
-
-void	cleanup(t_monitor *monitor)
-{
-	int	i;
-
-	if (!monitor)
+	if (!sim)
 		return ;
 	i = 0;
-	while (i < monitor->total)
+	while (i < sim->total)
 	{
-		if (monitor->philos)
+		if (sim->philos)
 		{
-			pthread_join(monitor->philos[i].thread, NULL);
-			pthread_mutex_destroy(&monitor->philos[i].meal_lock);
+			pthread_join(sim->philos[i].thread, NULL);
+			pthread_mutex_destroy(&sim->philos[i].meal_lock);
 		}
-		if (monitor->forks)
-			pthread_mutex_destroy(&monitor->forks[i]);
+		if (sim->forks)
+			pthread_mutex_destroy(&sim->forks[i]);
 		i++;
 	}
-	pthread_mutex_destroy(&monitor->print_lock);
-	pthread_mutex_destroy(&monitor->sim_lock);
-	free(monitor->philos);
-	free(monitor->forks);
+	pthread_mutex_destroy(&sim->print_lock);
+	pthread_mutex_destroy(&sim->sim_lock);
+	free(sim->philos);
+	free(sim->forks);
 }
