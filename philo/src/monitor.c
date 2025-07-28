@@ -12,12 +12,67 @@
 
 #include "../include/philo.h"
 
-void	monitor(t_sim *sim)
+void	print_status(t_philo *philo, char *msg)
+{
+	long	timestamp;
+
+	pthread_mutex_lock(&philo->sim->print_lock);
+	if (!stop_sim(philo->sim))
+	{
+		timestamp = get_time_ms() - philo->sim->start_time;
+		printf("%ld %d %s\n", timestamp, philo->id, msg);
+	}
+	pthread_mutex_unlock(&philo->sim->print_lock);
+}
+
+/* static void	grant_meals(t_sim *sim)
+{
+	int		i;
+	long	hunger;
+	long	current_time;
+
+	i = 0;
+	current_time = get_time_ms();
+	while (i < sim->total)
+	{
+		pthread_mutex_lock(&sim->philos[i].meal_lock);
+		hunger = current_time - sim->philos[i].last_meal; 
+		if (!sim->philos[i].meal_granted && hunger > sim->time_to_die * 0.3)
+			sim->philos[i].meal_granted = 1;
+		pthread_mutex_unlock(&sim->philos[i].meal_lock);
+		i++;
+	}
+} */
+
+static void	check_satisfied(t_sim *sim)
 {
 	int	i;
-	int	satiety;
+	int	satisfied;
 
-	satiety = 1;
+	i = 0;
+	satisfied = 0;
+	while (i < sim->total)
+	{
+		pthread_mutex_lock(&sim->philos[i].meal_lock);
+		if (sim->philos[i].meals_eaten >= sim->required_meals)
+			satisfied++;
+		pthread_mutex_unlock(&sim->philos[i].meal_lock);
+		i++;
+	}
+	if (satisfied == sim->total)
+	{
+		printf("%ld The philosophers are all satisfied\n",
+			get_time_ms() - sim->start_time);
+		pthread_mutex_lock(&sim->sim_lock);
+		sim->sim_over = 1;
+		pthread_mutex_unlock(&sim->sim_lock);
+	}
+}
+
+static void	check_deaths(t_sim *sim)
+{
+	int	i;
+
 	i = 0;
 	while (i < sim->total)
 	{
@@ -25,20 +80,21 @@ void	monitor(t_sim *sim)
 		if (get_time_ms() - sim->philos[i].last_meal > sim->time_to_die)
 		{
 			print_status(&sim->philos[i], "died");
+			pthread_mutex_lock(&sim->sim_lock);
 			sim->sim_over = 1;
+			pthread_mutex_unlock(&sim->sim_lock);
 			pthread_mutex_unlock(&sim->philos[i].meal_lock);
 			return;
 		}
-		if (sim->required_meals != -1
-			&& sim->philos[i].meals_eaten < sim->required_meals)
-			satiety = 0;
 		pthread_mutex_unlock(&sim->philos[i].meal_lock);
 		i++;
 	}
-	if (sim->required_meals != -1 && satiety)
-	{
-		sim->sim_over = 1;
-		printf("%ld The philosophers are all satiated\n",
-			get_time_ms() - sim->start_time);
-	}
+}
+
+void	monitor(t_sim *sim)
+{
+	check_deaths(sim);
+	if (sim->required_meals != -1)
+		check_satisfied(sim);
+	/* grant_meals(sim); */
 }

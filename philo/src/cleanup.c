@@ -26,6 +26,16 @@ int	error_exit(t_sim *sim, char *error_msg, int error_code)
 	return (error_code);
 }
 
+int stop_sim(t_sim *sim)
+{
+	int	over;
+    
+	pthread_mutex_lock(&sim->sim_lock);
+	over = sim->sim_over;
+	pthread_mutex_unlock(&sim->sim_lock);
+	return (over);
+}
+
 void	cleanup(t_sim *sim)
 {
 	int	i;

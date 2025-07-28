@@ -25,6 +25,7 @@ int	init_philos(t_sim *sim)
 		sim->philos[i].id = i + 1;
 		sim->philos[i].meals_eaten = 0;
 		sim->philos[i].last_meal = sim->start_time;
+		sim->philos[i].meal_granted = 0;
 		sim->philos[i].left_fork = &sim->forks[i];
 		sim->philos[i].right_fork = &sim->forks[(i + 1) % sim->total];
 		sim->philos[i].sim = sim;
@@ -71,6 +72,8 @@ int	init_config(t_sim *sim, int argc, char **argv)
 	sim->start_time = get_time_ms();
 	if (sim->start_time < 0)
 		return (0);
+	pthread_mutex_lock(&sim->sim_lock);
 	sim->sim_over = 1;
+	pthread_mutex_unlock(&sim->sim_lock);
 	return (1);
 }
