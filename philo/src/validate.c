@@ -52,7 +52,8 @@ static int	is_numeric(const char *s)
 
 int	validate_input(int argc, char **argv)
 {
-	int	i;
+	int		i;
+	long	tmp;
 
 	if (argc < 5 || argc > 6)
 		return (0);
@@ -61,7 +62,12 @@ int	validate_input(int argc, char **argv)
 	{
 		if (!is_numeric(argv[i]))
 			return (0);
-		if (ft_atol(argv[i]) < 0 || ft_atol(argv[i]) >= INT_MAX)
+		tmp = ft_atol(argv[i]);
+		if (i == 1 && (tmp < 1 || tmp > 200))
+			return (0);
+		if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
+			return (0);
+		if (i == 5 && (tmp < 1 || tmp >= INT_MAX))
 			return (0);
 		i++;
 	}

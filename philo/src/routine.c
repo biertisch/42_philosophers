@@ -12,22 +12,6 @@
 
 #include "../include/philo.h"
 
-/* static void	request_meal(t_philo *philo)
-{
-	while (!stop_sim(philo->sim))
-	{
-		pthread_mutex_lock(&philo->meal_lock);
-		if (philo->meal_granted)
-		{
-			philo->meal_granted = 0;
-			pthread_mutex_unlock(&philo->meal_lock);
-			break;
-		}
-		pthread_mutex_unlock(&philo->meal_lock);
-		usleep(100);
-	}
-} */
-
 static void	wait_until_hungry(t_philo *philo)
 {
 	long	threshold;
@@ -36,8 +20,8 @@ static void	wait_until_hungry(t_philo *philo)
 	while (!stop_sim(philo->sim))
 	{
 		if (get_time_ms() - philo->last_meal > threshold)
-			break;
-		sleep_ms(1);
+			break ;
+		sleep_ms(philo->sim, 1);
 	}
 }
 
@@ -48,16 +32,16 @@ static void	eat(t_philo *philo)
 	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->meal_lock);
 	print_status(philo, "is eating");
-	sleep_ms(philo->sim->time_to_eat);
+	sleep_ms(philo->sim, philo->sim->time_to_eat);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
 }
 
-static void take_forks(t_philo *philo)
+static int	take_forks(t_philo *philo)
 {
 	pthread_mutex_t	*first;
 	pthread_mutex_t	*second;
-	
+
 	if (philo->left_fork < philo->right_fork)
 	{
 		first = philo->left_fork;
@@ -70,8 +54,14 @@ static void take_forks(t_philo *philo)
 	}
 	pthread_mutex_lock(first);
 	print_status(philo, "has taken a fork");
+	if (first == second)
+	{
+		pthread_mutex_unlock(first);
+		return (0);
+	}
 	pthread_mutex_lock(second);
 	print_status(philo, "has taken a fork");
+	return (1);
 }
 
 void	*routine(void *arg)
@@ -80,16 +70,16 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		sleep_ms(philo->sim->time_to_eat);
+		sleep_ms(philo->sim, philo->sim->time_to_eat);
 	else
-		sleep_ms(philo->sim->time_to_eat / 2);
+		sleep_ms(philo->sim, philo->sim->time_to_eat / 2);
 	while (!stop_sim(philo->sim))
 	{
-	/* 	request_meal(philo); */
-		take_forks(philo);
+		if (!take_forks(philo))
+			break ;
 		eat(philo);
 		print_status(philo, "is sleeping");
-		sleep_ms(philo->sim->time_to_sleep);
+		sleep_ms(philo->sim, philo->sim->time_to_sleep);
 		print_status(philo, "is thinking");
 		wait_until_hungry(philo);
 	}

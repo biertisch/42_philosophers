@@ -1,7 +1,7 @@
 NAME = philo
 SRC_DIR = src/
 SRC = $(addprefix $(SRC_DIR),\
-		cleanup.c\
+		exit.c\
 		init.c\
 		main.c\
 		monitor.c\

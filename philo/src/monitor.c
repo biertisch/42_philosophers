@@ -25,25 +25,6 @@ void	print_status(t_philo *philo, char *msg)
 	pthread_mutex_unlock(&philo->sim->print_lock);
 }
 
-/* static void	grant_meals(t_sim *sim)
-{
-	int		i;
-	long	hunger;
-	long	current_time;
-
-	i = 0;
-	current_time = get_time_ms();
-	while (i < sim->total)
-	{
-		pthread_mutex_lock(&sim->philos[i].meal_lock);
-		hunger = current_time - sim->philos[i].last_meal; 
-		if (!sim->philos[i].meal_granted && hunger > sim->time_to_die * 0.3)
-			sim->philos[i].meal_granted = 1;
-		pthread_mutex_unlock(&sim->philos[i].meal_lock);
-		i++;
-	}
-} */
-
 static void	check_satisfied(t_sim *sim)
 {
 	int	i;
@@ -84,7 +65,7 @@ static void	check_deaths(t_sim *sim)
 			sim->sim_over = 1;
 			pthread_mutex_unlock(&sim->sim_lock);
 			pthread_mutex_unlock(&sim->philos[i].meal_lock);
-			return;
+			return ;
 		}
 		pthread_mutex_unlock(&sim->philos[i].meal_lock);
 		i++;
@@ -96,5 +77,4 @@ void	monitor(t_sim *sim)
 	check_deaths(sim);
 	if (sim->required_meals != -1)
 		check_satisfied(sim);
-	/* grant_meals(sim); */
 }

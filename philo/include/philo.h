@@ -29,7 +29,6 @@ typedef struct s_philo
 	pthread_t		thread;
 	int				meals_eaten;
 	long			last_meal;
-	int				meal_granted;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -59,10 +58,10 @@ int		init_philos(t_sim *sim);
 void	*routine(void *arg);
 void	monitor(t_sim *sim);
 void	print_status(t_philo *philo, char *msg);
-long	get_time_ms();
-int		sleep_ms(long msec);
+long	get_time_ms(void);
+void	sleep_ms(t_sim *sim, long msec);
 int		error_exit(t_sim *sim, char *error_msg, int error_code);
-int 	stop_sim(t_sim *sim);
+int		stop_sim(t_sim *sim);
 void	cleanup(t_sim *sim);
 
 #endif

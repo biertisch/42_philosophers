@@ -12,20 +12,35 @@
 
 #include "../include/philo.h"
 
-long	get_time_ms()
+long	get_time_ms(void)
 {
 	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) != 0)
 		return (-1);
-	return (tv.tv_sec * 1000L + tv.tv_usec	/ 1000);
+	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
 }
 
-int	sleep_ms(long msec)
+void	sleep_ms(t_sim *sim, long msec)
 {
+	long	start;
+	long	now;
+	long	last_check;
+
 	if (msec <= 0)
-		return (1);
-	if (usleep(msec * 1000) != 0)
-		return (0);	
-	return (1);
+		return ;
+	start = get_time_ms();
+	now = start;
+	last_check = start;
+	while (now - start < msec)
+	{
+		if (now - last_check >= 10)
+		{
+			if (stop_sim(sim))
+				break ;
+			last_check = now;
+		}
+		usleep(1000);
+		now = get_time_ms();
+	}
 }

@@ -25,14 +25,13 @@ int	init_philos(t_sim *sim)
 		sim->philos[i].id = i + 1;
 		sim->philos[i].meals_eaten = 0;
 		sim->philos[i].last_meal = sim->start_time;
-		sim->philos[i].meal_granted = 0;
 		sim->philos[i].left_fork = &sim->forks[i];
 		sim->philos[i].right_fork = &sim->forks[(i + 1) % sim->total];
 		sim->philos[i].sim = sim;
 		if (pthread_mutex_init(&sim->philos[i].meal_lock, NULL) != 0)
 			return (0);
 		if (pthread_create(&sim->philos[i].thread, NULL, &routine,
-			&sim->philos[i]) != 0)
+				&sim->philos[i]) != 0)
 			return (0);
 		i++;
 	}
