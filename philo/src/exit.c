@@ -12,28 +12,14 @@
 
 #include "../include/philo.h"
 
-int	error_exit(t_sim *sim, char *error_msg, int error_code)
-{
-	int	len;
-
-	len = 0;
-	while (error_msg[len])
-		len++;
-	write(2, "Error: ", 7);
-	write(2, error_msg, len);
-	write(2, "\n", 1);
-	cleanup(sim);
-	return (error_code);
-}
-
 int	stop_sim(t_sim *sim)
 {
-	int	over;
+	int	status;
 
 	pthread_mutex_lock(&sim->sim_lock);
-	over = sim->sim_over;
+	status = sim->sim_over;
 	pthread_mutex_unlock(&sim->sim_lock);
-	return (over);
+	return (status);
 }
 
 void	cleanup(t_sim *sim)
@@ -43,19 +29,35 @@ void	cleanup(t_sim *sim)
 	if (!sim)
 		return ;
 	i = 0;
-	while (i < sim->total)
-	{
-		if (sim->philos)
-		{
-			pthread_join(sim->philos[i].thread, NULL);
-			pthread_mutex_destroy(&sim->philos[i].meal_lock);
-		}
-		if (sim->forks)
-			pthread_mutex_destroy(&sim->forks[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&sim->print_lock);
-	pthread_mutex_destroy(&sim->sim_lock);
+	while (i < sim->threads_created)
+		pthread_join(sim->philos[i++].thread, NULL);
+	i = 0;
+	while (i < sim->meal_mutexes_init)
+		pthread_mutex_destroy(&sim->philos[i++].meal_lock);
+	i = 0;
+	while (i < sim->fork_mutexes_init)
+		pthread_mutex_destroy(&sim->forks[i++]);
+	if (sim->sim_mutex_init)
+		pthread_mutex_destroy(&sim->sim_lock);
+	if (sim->print_mutex_init)
+		pthread_mutex_destroy(&sim->print_lock);
 	free(sim->philos);
 	free(sim->forks);
+}
+
+int	error_exit(t_sim *sim, char *error_msg, int error_code)
+{
+	int	len;
+
+	len = 0;
+	if (error_msg)
+	{
+		while (error_msg[len])
+			len++;
+		write(2, "Error: ", 7);
+		write(2, error_msg, len);
+		write(2, "\n", 1);
+	}
+	cleanup(sim);
+	return (error_code);
 }

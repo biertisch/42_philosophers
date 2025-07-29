@@ -12,11 +12,12 @@
 
 #include "../include/philo.h"
 
-static void	wait_until_hungry(t_philo *philo)
+static void	think_until_hungry(t_philo *philo)
 {
 	long	threshold;
 
-	threshold = philo->sim->time_to_die * 0.90;
+	print_status(philo, "is thinking");
+	threshold = philo->sim->time_to_die * 0.85;
 	while (!stop_sim(philo->sim))
 	{
 		if (get_time_ms() - philo->last_meal > threshold)
@@ -64,15 +65,20 @@ static int	take_forks(t_philo *philo)
 	return (1);
 }
 
+static void	wait_to_be_served(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+		sleep_ms(philo->sim, philo->sim->time_to_eat);
+	else
+		sleep_ms(philo->sim, philo->sim->time_to_eat / 2);
+}
+
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->id % 2 == 0)
-		sleep_ms(philo->sim, philo->sim->time_to_eat);
-	else
-		sleep_ms(philo->sim, philo->sim->time_to_eat / 2);
+	wait_to_be_served(philo);
 	while (!stop_sim(philo->sim))
 	{
 		if (!take_forks(philo))
@@ -80,8 +86,7 @@ void	*routine(void *arg)
 		eat(philo);
 		print_status(philo, "is sleeping");
 		sleep_ms(philo->sim, philo->sim->time_to_sleep);
-		print_status(philo, "is thinking");
-		wait_until_hungry(philo);
+		think_until_hungry(philo);
 	}
 	return (NULL);
 }

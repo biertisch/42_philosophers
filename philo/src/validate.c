@@ -17,8 +17,6 @@ long	ft_atol(const char *s)
 	long	res;
 	int		sign;
 
-	if (!s)
-		return (0);
 	res = 0;
 	sign = 1;
 	while (*s == ' ' || (*s >= 9 && *s <= 13))
@@ -29,9 +27,9 @@ long	ft_atol(const char *s)
 			sign = -1;
 		s++;
 	}
-	while (*s >= '0' && *s <= '9')
+	while (*s && *s >= '0' && *s <= '9')
 	{
-		res = res * 10 + *s - '0';
+		res = res * 10 + (*s - '0');
 		s++;
 	}
 	return (res * sign);
@@ -39,8 +37,6 @@ long	ft_atol(const char *s)
 
 static int	is_numeric(const char *s)
 {
-	if (!*s)
-		return (0);
 	while (*s)
 	{
 		if (*s < '0' || *s > '9')
@@ -65,9 +61,9 @@ int	validate_input(int argc, char **argv)
 		tmp = ft_atol(argv[i]);
 		if (i == 1 && (tmp < 1 || tmp > 200))
 			return (0);
-		if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
+		else if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
 			return (0);
-		if (i == 5 && (tmp < 1 || tmp >= INT_MAX))
+		else if (i == 5 && (tmp < 1 || tmp > INT_MAX))
 			return (0);
 		i++;
 	}

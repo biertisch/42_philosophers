@@ -21,7 +21,7 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-struct	s_sim;
+typedef struct s_sim	t_sim;
 
 typedef struct s_philo
 {
@@ -32,22 +32,27 @@ typedef struct s_philo
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	struct s_sim	*sim;
+	t_sim			*sim;
 }					t_philo;
 
 typedef struct s_sim
 {
-	int				total;
+	int				philo_count;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				required_meals;
-	pthread_mutex_t	print_lock;
 	long			start_time;
-	int				sim_over;
 	pthread_mutex_t	sim_lock;
+	int				sim_over;
+	int				sim_mutex_init;
+	pthread_mutex_t	print_lock;
+	int				print_mutex_init;	
 	pthread_mutex_t	*forks;
+	int				fork_mutexes_init;
 	t_philo			*philos;
+	int				threads_created;
+	int				meal_mutexes_init;	
 }					t_sim;
 
 int		validate_input(int argc, char **argv);

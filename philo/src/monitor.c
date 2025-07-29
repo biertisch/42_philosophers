@@ -12,27 +12,16 @@
 
 #include "../include/philo.h"
 
-void	print_status(t_philo *philo, char *msg)
+static void	check_meal_completion(t_sim *sim)
 {
-	long	timestamp;
-
-	pthread_mutex_lock(&philo->sim->print_lock);
-	if (!stop_sim(philo->sim))
-	{
-		timestamp = get_time_ms() - philo->sim->start_time;
-		printf("%ld %d %s\n", timestamp, philo->id, msg);
-	}
-	pthread_mutex_unlock(&philo->sim->print_lock);
-}
-
-static void	check_satisfied(t_sim *sim)
-{
-	int	i;
-	int	satisfied;
+	int		i;
+	int		satisfied;
+	long	now;
 
 	i = 0;
 	satisfied = 0;
-	while (i < sim->total)
+	now = get_time_ms();
+	while (i < sim->philo_count)
 	{
 		pthread_mutex_lock(&sim->philos[i].meal_lock);
 		if (sim->philos[i].meals_eaten >= sim->required_meals)
@@ -40,41 +29,40 @@ static void	check_satisfied(t_sim *sim)
 		pthread_mutex_unlock(&sim->philos[i].meal_lock);
 		i++;
 	}
-	if (satisfied == sim->total)
+	if (satisfied == sim->philo_count)
 	{
+		pthread_mutex_lock(&sim->print_lock);
 		printf("%ld The philosophers are all satisfied\n",
-			get_time_ms() - sim->start_time);
+			now - sim->start_time);
+		pthread_mutex_unlock(&sim->print_lock);
 		pthread_mutex_lock(&sim->sim_lock);
 		sim->sim_over = 1;
 		pthread_mutex_unlock(&sim->sim_lock);
 	}
 }
 
-static void	check_deaths(t_sim *sim)
+void	monitor(t_sim *sim)
 {
-	int	i;
+	int		i;
+	long	now;
 
 	i = 0;
-	while (i < sim->total)
+	now = get_time_ms();
+	while (i < sim->philo_count)
 	{
 		pthread_mutex_lock(&sim->philos[i].meal_lock);
-		if (get_time_ms() - sim->philos[i].last_meal > sim->time_to_die)
+		if (now - sim->philos[i].last_meal >= sim->time_to_die)
 		{
+			pthread_mutex_unlock(&sim->philos[i].meal_lock);
 			print_status(&sim->philos[i], "died");
 			pthread_mutex_lock(&sim->sim_lock);
 			sim->sim_over = 1;
 			pthread_mutex_unlock(&sim->sim_lock);
-			pthread_mutex_unlock(&sim->philos[i].meal_lock);
 			return ;
 		}
 		pthread_mutex_unlock(&sim->philos[i].meal_lock);
 		i++;
 	}
-}
-
-void	monitor(t_sim *sim)
-{
-	check_deaths(sim);
 	if (sim->required_meals != -1)
-		check_satisfied(sim);
+		check_meal_completion(sim);
 }

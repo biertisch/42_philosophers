@@ -18,13 +18,13 @@ int	main(int argc, char **argv)
 
 	memset(&sim, 0, sizeof(sim));
 	if (!validate_input(argc, argv))
-		return (error_exit(&sim, "invalid input", 1));
+		return (error_exit(&sim, "Invalid input", 1));
 	if (!init_config(&sim, argc, argv))
-		return (error_exit(&sim, "failure to initialize configuration", 2));
+		return (error_exit(&sim, "Failed to initialize configuration", 2));
 	if (!init_forks(&sim))
-		return (error_exit(&sim, "failure to initialize forks", 3));
+		return (error_exit(&sim, "Failed to initialize forks", 3));
 	if (!init_philos(&sim))
-		return (error_exit(&sim, "failure to initialize philosophers", 4));
+		return (error_exit(&sim, "Failed to initialize philosophers", 4));
 	pthread_mutex_lock(&sim.sim_lock);
 	sim.sim_over = 0;
 	pthread_mutex_unlock(&sim.sim_lock);
