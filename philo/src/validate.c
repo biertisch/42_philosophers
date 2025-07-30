@@ -46,25 +46,25 @@ static int	is_numeric(const char *s)
 	return (1);
 }
 
-int	validate_input(int argc, char **argv)
+int	validate_input(t_sim *sim, int argc, char **argv)
 {
 	int		i;
 	long	tmp;
 
 	if (argc < 5 || argc > 6)
-		return (0);
+		return (error_exit(sim, ERR_0));
 	i = 1;
 	while (i < argc)
 	{
 		if (!is_numeric(argv[i]))
-			return (0);
+			return (error_exit(sim, ERR_1));
 		tmp = ft_atol(argv[i]);
 		if (i == 1 && (tmp < 1 || tmp > 200))
-			return (0);
+			return (error_exit(sim, ERR_2));
 		else if ((i >= 2 && i <= 4) && (tmp < 60 || tmp > INT_MAX))
-			return (0);
+			return (error_exit(sim, ERR_2));
 		else if (i == 5 && (tmp < 1 || tmp > INT_MAX))
-			return (0);
+			return (error_exit(sim, ERR_2));
 		i++;
 	}
 	return (1);

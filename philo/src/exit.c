@@ -45,7 +45,7 @@ void	cleanup(t_sim *sim)
 	free(sim->forks);
 }
 
-int	error_exit(t_sim *sim, char *error_msg, int error_code)
+int	error_exit(t_sim *sim, char *error_msg)
 {
 	int	len;
 
@@ -59,5 +59,5 @@ int	error_exit(t_sim *sim, char *error_msg, int error_code)
 		write(2, "\n", 1);
 	}
 	cleanup(sim);
-	return (error_code);
+	return (0);
 }

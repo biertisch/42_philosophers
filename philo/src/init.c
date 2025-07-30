@@ -35,7 +35,7 @@ int	init_philos(t_sim *sim)
 
 	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
 	if (!sim->philos)
-		return (0);
+		return (error_exit(sim, ERR_7));
 	i = 0;
 	while (i < sim->philo_count)
 	{
@@ -46,9 +46,9 @@ int	init_philos(t_sim *sim)
 		sim->philos[i].right_fork = &sim->forks[(i + 1) % sim->philo_count];
 		sim->philos[i].sim = sim;
 		if (!init_philo_mutex(sim, i))
-			return (0);
+			return (error_exit(sim, ERR_8));
 		if (!init_philo_thread(sim, i))
-			return (0);
+			return (error_exit(sim, ERR_9));
 		i++;
 	}
 	return (1);
@@ -60,14 +60,14 @@ int	init_forks(t_sim *sim)
 
 	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->philo_count);
 	if (!sim->forks)
-		return (0);
+		return (error_exit(sim, ERR_5));
 	i = 0;
 	while (i < sim->philo_count)
 	{
 		if (pthread_mutex_init(&sim->forks[i++], NULL) == 0)
 			sim->fork_mutexes_init++;
 		else
-			return (0);
+			return (error_exit(sim, ERR_6));
 	}
 	return (1);
 }
@@ -85,13 +85,13 @@ int	init_config(t_sim *sim, int argc, char **argv)
 	if (pthread_mutex_init(&sim->sim_lock, NULL) == 0)
 		sim->sim_mutex_init++;
 	else
-		return (0);
+		return (error_exit(sim, ERR_3));
 	if (pthread_mutex_init(&sim->print_lock, NULL) == 0)
 		sim->print_mutex_init++;
 	else
-		return (0);
+		return (error_exit(sim, ERR_3));
 	sim->start_time = get_time_ms();
 	if (sim->start_time < 0)
-		return (0);
+		return (error_exit(sim, ERR_4));
 	return (1);
 }

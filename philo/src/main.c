@@ -17,14 +17,14 @@ int	main(int argc, char **argv)
 	t_sim	sim;
 
 	memset(&sim, 0, sizeof(sim));
-	if (!validate_input(argc, argv))
-		return (error_exit(&sim, "Invalid input", 1));
+	if (!validate_input(&sim, argc, argv))
+		return (1);
 	if (!init_config(&sim, argc, argv))
-		return (error_exit(&sim, "Failed to initialize configuration", 2));
+		return (2);
 	if (!init_forks(&sim))
-		return (error_exit(&sim, "Failed to initialize forks", 3));
+		return (3);
 	if (!init_philos(&sim))
-		return (error_exit(&sim, "Failed to initialize philosophers", 4));
+		return (4);
 	pthread_mutex_lock(&sim.sim_lock);
 	sim.sim_over = 0;
 	pthread_mutex_unlock(&sim.sim_lock);
