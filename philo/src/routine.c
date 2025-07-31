@@ -34,33 +34,20 @@ static void	eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_lock);
 	print_status(philo, "is eating");
 	sleep_ms(philo->sim, philo->sim->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->first_fork);
+	pthread_mutex_unlock(philo->second_fork);
 }
 
 static int	take_forks(t_philo *philo)
 {
-	pthread_mutex_t	*first;
-	pthread_mutex_t	*second;
-
-	if (philo->left_fork < philo->right_fork)
-	{
-		first = philo->left_fork;
-		second = philo->right_fork;
-	}
-	else
-	{
-		first = philo->right_fork;
-		second = philo->left_fork;
-	}
-	pthread_mutex_lock(first);
+	pthread_mutex_lock(philo->first_fork);
 	print_status(philo, "has taken a fork");
-	if (first == second)
+	if (philo->first_fork == philo->second_fork)
 	{
-		pthread_mutex_unlock(first);
+		pthread_mutex_unlock(philo->first_fork);
 		return (0);
 	}
-	pthread_mutex_lock(second);
+	pthread_mutex_lock(philo->second_fork);
 	print_status(philo, "has taken a fork");
 	return (1);
 }

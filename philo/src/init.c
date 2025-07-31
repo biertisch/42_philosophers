@@ -12,21 +12,18 @@
 
 #include "../include/philo.h"
 
-static int	init_philo_thread(t_sim *sim, int i)
+static void	assign_forks(t_sim *sim, int i)
 {
-	if (pthread_create(&sim->philos[i].thread, NULL, &routine,
-			&sim->philos[i]) != 0)
-		return (0);
-	sim->threads_created++;
-	return (1);
-}
-
-static int	init_philo_mutex(t_sim *sim, int i)
-{
-	if (pthread_mutex_init(&sim->philos[i].meal_lock, NULL) != 0)
-		return (0);
-	sim->meal_mutexes_init++;
-	return (1);
+	if ((i < sim->philo_count) - 1)
+	{
+		sim->philos[i].first_fork = &sim->forks[i];
+		sim->philos[i].second_fork = &sim->forks[(i + 1) % sim->philo_count];
+	}
+	else
+	{
+		sim->philos[i].first_fork = &sim->forks[(i + 1) % sim->philo_count];
+		sim->philos[i].second_fork = &sim->forks[i];
+	}
 }
 
 int	init_philos(t_sim *sim)
@@ -42,13 +39,15 @@ int	init_philos(t_sim *sim)
 		sim->philos[i].id = i + 1;
 		sim->philos[i].meals_eaten = 0;
 		sim->philos[i].last_meal = sim->start_time;
-		sim->philos[i].left_fork = &sim->forks[i];
-		sim->philos[i].right_fork = &sim->forks[(i + 1) % sim->philo_count];
 		sim->philos[i].sim = sim;
-		if (!init_philo_mutex(sim, i))
+		assign_forks(sim, i);
+		if (pthread_mutex_init(&sim->philos[i].meal_lock, NULL) != 0)
 			return (error_exit(sim, ERR_8));
-		if (!init_philo_thread(sim, i))
-			return (error_exit(sim, ERR_9));
+		sim->meal_mutexes_init++;
+		if (pthread_create(&sim->philos[i].thread, NULL, &routine,
+			&sim->philos[i]) != 0)
+			return (error_exit(sim, ERR_8));
+		sim->threads_created++;
 		i++;
 	}
 	return (1);

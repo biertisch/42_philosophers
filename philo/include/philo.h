@@ -41,8 +41,8 @@ typedef struct s_philo
 	int				meals_eaten;
 	long			last_meal;
 	pthread_mutex_t	meal_lock;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*first_fork;
+	pthread_mutex_t	*second_fork;
 	t_sim			*sim;
 }					t_philo;
 
