@@ -40,7 +40,7 @@ void	sleep_ms(t_sim *sim, long msec)
 				break ;
 			last_check = now;
 		}
-		usleep(1000);
+		usleep(500); //adjust if necessary
 		now = get_time_ms();
 	}
 }
