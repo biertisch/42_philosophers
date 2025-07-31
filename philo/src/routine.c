@@ -17,7 +17,7 @@ static void	think_until_hungry(t_philo *philo)
 	long	threshold;
 
 	print_status(philo, "is thinking");
-	threshold = philo->sim->time_to_die * 0.85;
+	threshold = philo->sim->time_to_die * 0.75;
 	while (!stop_sim(philo->sim))
 	{
 		if (get_time_ms() - philo->last_meal > threshold)

@@ -14,7 +14,7 @@
 
 static void	assign_forks(t_sim *sim, int i)
 {
-	if ((i < sim->philo_count) - 1)
+	if (i < sim->philo_count - 1)
 	{
 		sim->philos[i].first_fork = &sim->forks[i];
 		sim->philos[i].second_fork = &sim->forks[(i + 1) % sim->philo_count];
